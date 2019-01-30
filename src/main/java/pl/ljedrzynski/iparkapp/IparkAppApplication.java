@@ -1,0 +1,14 @@
+package pl.ljedrzynski.iparkapp;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+
+@SpringBootApplication
+@EnableJpaRepositories
+public class IparkAppApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(IparkAppApplication.class, args);
+    }
+}
