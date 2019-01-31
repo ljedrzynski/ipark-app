@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 public class ParkingOccupationDTO {
 
     private Long id;
-    private String occupationId;
     private String registrationNumber;
     private Boolean isVip;
     private LocalDateTime startDate;

@@ -6,11 +6,11 @@ import pl.ljedrzynski.iparkapp.domain.ParkingOccupation;
 import pl.ljedrzynski.iparkapp.service.dto.ParkingOccupationDTO;
 
 @Mapper(componentModel = "spring")
-public interface ParkingMapper {
+public interface ParkingOccupationMapper {
 
-    ParkingMapper INSTANCE = Mappers.getMapper(ParkingMapper.class);
+    ParkingOccupationMapper INSTANCE = Mappers.getMapper(ParkingOccupationMapper.class);
 
-    ParkingOccupationDTO parkingToParkingDTO(ParkingOccupation parkingOccupation);
+    ParkingOccupationDTO toDTO(ParkingOccupation parkingOccupation);
 
-    ParkingOccupation parkingDTOtoParking(ParkingOccupationDTO parkingOccupationDTO);
+    ParkingOccupation toEntity(ParkingOccupationDTO parkingOccupationDTO);
 }

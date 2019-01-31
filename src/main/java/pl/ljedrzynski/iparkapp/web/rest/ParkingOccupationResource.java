@@ -1,14 +1,11 @@
 package pl.ljedrzynski.iparkapp.web.rest;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import pl.ljedrzynski.iparkapp.domain.ParkingOccupation;
 import pl.ljedrzynski.iparkapp.service.ParkingOccupationService;
 import pl.ljedrzynski.iparkapp.service.dto.ParkingOccupationDTO;
 
@@ -30,8 +27,8 @@ public class ParkingOccupationResource {
     @PostMapping
     public ResponseEntity<?> registerOccupation(@RequestBody ParkingOccupationDTO parkingOccupationDTO) {
         log.debug("REST request : {}", parkingOccupationDTO);
-        ParkingOccupationDTO occupationDTO = parkingOccupationService.registerOccupation(parkingOccupationDTO);
-        return ResponseEntity.created(URI.create(API_PARKING_OCCUPATIONS + "/" + occupationDTO.getOccupationId()))
+        ParkingOccupationDTO occupationDTO = parkingOccupationService.saveOccupation(parkingOccupationDTO);
+        return ResponseEntity.created(URI.create(API_PARKING_OCCUPATIONS + "/" + occupationDTO.getId()))
                 .body(occupationDTO);
     }
 }
