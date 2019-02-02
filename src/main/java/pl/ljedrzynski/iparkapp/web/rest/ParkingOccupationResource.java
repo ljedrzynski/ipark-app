@@ -15,10 +15,10 @@ import java.net.URI;
 
 @Slf4j
 @RestController
-@RequestMapping(ParkingOccupationResource.API_PARKING_OCCUPATIONS)
+@RequestMapping(ParkingOccupationResource.API_PARKING_OCCUPATIONS_URI)
 public class ParkingOccupationResource {
 
-    public static final String API_PARKING_OCCUPATIONS = "/api/parking-occupations";
+    static final String API_PARKING_OCCUPATIONS_URI = "/api/parking-occupations";
 
     private ParkingOccupationService parkingOccupationService;
 
@@ -30,7 +30,7 @@ public class ParkingOccupationResource {
     public ResponseEntity<?> registerOccupation(@RequestBody @Valid ParkingOccupationDTO parkingOccupationDTO) {
         log.debug("REST request : {}", parkingOccupationDTO);
         ParkingOccupationDTO occupationDTO = parkingOccupationService.createOccupation(parkingOccupationDTO);
-        return ResponseEntity.created(URI.create(String.format("%s/%d", API_PARKING_OCCUPATIONS, occupationDTO.getId())))
+        return ResponseEntity.created(URI.create(String.format("%s/%d", API_PARKING_OCCUPATIONS_URI, occupationDTO.getId())))
                 .contentType(MediaType.valueOf(MediaType.APPLICATION_JSON_UTF8_VALUE))
                 .body(occupationDTO);
     }

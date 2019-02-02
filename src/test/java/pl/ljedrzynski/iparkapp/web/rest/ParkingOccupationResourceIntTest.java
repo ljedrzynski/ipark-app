@@ -32,9 +32,8 @@ import static pl.ljedrzynski.iparkapp.utils.TestUtils.*;
 @SpringBootTest(classes = IparkAppApplication.class)
 public class ParkingOccupationResourceIntTest {
 
-    private static final String API_PARKING_OCCUPATIONS = "/api/parking-occupations";
+    private static final String API_PARKING_OCCUPATIONS_URI = "/api/parking-occupations";
     private static final String DEFAULT_REG_NUMBER = "WWL50012";
-
 
     @Autowired
     private WebApplicationContext wac;
@@ -58,7 +57,7 @@ public class ParkingOccupationResourceIntTest {
 
         int occupationsBeforeTest = parkingOccupationRepository.findAll().size();
 
-        mockMvc.perform(post(API_PARKING_OCCUPATIONS)
+        mockMvc.perform(post(API_PARKING_OCCUPATIONS_URI)
                 .contentType(APPLICATION_JSON_CHARSET_UTF_8)
                 .content(new ObjectMapper().writeValueAsString(parkingOccupationDTO)))
                 .andDo(print())
@@ -80,7 +79,7 @@ public class ParkingOccupationResourceIntTest {
         ParkingOccupationDTO parkingOccupationDTO = ParkingOccupationDTO.builder()
                 .build();
 
-        mockMvc.perform(post(API_PARKING_OCCUPATIONS)
+        mockMvc.perform(post(API_PARKING_OCCUPATIONS_URI)
                 .contentType(APPLICATION_JSON_CHARSET_UTF_8)
                 .content(new ObjectMapper().writeValueAsString(parkingOccupationDTO)))
                 .andDo(print())
@@ -96,7 +95,7 @@ public class ParkingOccupationResourceIntTest {
                 .registrationNumber("0000")
                 .build();
 
-        mockMvc.perform(post(API_PARKING_OCCUPATIONS)
+        mockMvc.perform(post(API_PARKING_OCCUPATIONS_URI)
                 .contentType(APPLICATION_JSON_CHARSET_UTF_8)
                 .content(new ObjectMapper().writeValueAsString(parkingOccupationDTO)))
                 .andDo(print())

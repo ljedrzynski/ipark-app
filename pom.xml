@@ -24,6 +24,7 @@
         <java.version>11</java.version>
         <org.mapstruct.version>1.2.0.Final</org.mapstruct.version>
         <org.slf4j.version>1.7.25</org.slf4j.version>
+        <io.springfox.swagger2.version>2.9.2</io.springfox.swagger2.version>
     </properties>
 
     <dependencies>
@@ -89,18 +90,16 @@
             <version>3.4.1</version>
             <scope>test</scope>
         </dependency>
-        <!--<dependency>-->
-            <!--<groupId>org.hamcrest</groupId>-->
-            <!--<artifactId>hamcrest-library</artifactId>-->
-            <!--<version>1.3</version>-->
-            <!--<scope>test</scope>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>com.jayway.jsonpath</groupId>-->
-            <!--<artifactId>json-path</artifactId>-->
-            <!--<version>2.2.0</version>-->
-            <!--<scope>test</scope>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger2</artifactId>
+            <version>${io.springfox.swagger2.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger-ui</artifactId>
+            <version>${io.springfox.swagger2.version}</version>
+        </dependency>
     </dependencies>
 
     <build>

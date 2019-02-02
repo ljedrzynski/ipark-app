@@ -4,7 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
+
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import pl.ljedrzynski.iparkapp.utils.exception.BadRequestException;
 import pl.ljedrzynski.iparkapp.domain.ParkingOccupation;
@@ -20,6 +20,7 @@ import java.time.ZoneId;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 import static pl.ljedrzynski.iparkapp.utils.TestUtils.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -39,8 +40,7 @@ public class ParkingOccupationServiceTest {
 
     @Test
     public void createOccupation_shouldReturnCreatedOccupation() {
-        ParkingOccupationDTO parkingOccupationDTO = getParkingOccupationDTO();
-
+        var parkingOccupationDTO = getParkingOccupationDTO();
         var result = parkingOccupationService.createOccupation(parkingOccupationDTO);
         assertThat(result).isNotNull()
                 .hasFieldOrPropertyWithValue(REGISTRATION_NUMBER, "PO50012")
@@ -51,7 +51,7 @@ public class ParkingOccupationServiceTest {
     @Test(expected = BadRequestException.class)
     public void createOccupation_shouldThrowException_whenOccupationAlreadyActive() {
         var parkingOccupationDTO = getParkingOccupationDTO();
-        Mockito.when(parkingOccupationRepository.findActiveParkingOccupation(anyString()))
+        when(parkingOccupationRepository.findActiveParkingOccupation(anyString()))
                 .thenReturn(java.util.Optional.of(new ParkingOccupation()));
         parkingOccupationService.createOccupation(parkingOccupationDTO);
     }

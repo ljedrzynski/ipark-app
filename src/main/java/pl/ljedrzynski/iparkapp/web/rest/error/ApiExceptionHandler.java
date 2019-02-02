@@ -17,6 +17,12 @@ import java.util.List;
 @RestControllerAdvice
 public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
+    @Override
+    protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body, HttpHeaders headers, HttpStatus status, WebRequest request) {
+        return ResponseEntity.badRequest()
+                .contentType(MediaType.valueOf(MediaType.APPLICATION_JSON_UTF8_VALUE))
+                .body(new ApiError(HttpStatus.BAD_REQUEST, ex.getMessage()));
+    }
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
