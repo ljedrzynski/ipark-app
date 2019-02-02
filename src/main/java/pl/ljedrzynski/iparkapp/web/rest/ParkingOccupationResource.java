@@ -1,6 +1,7 @@
 package pl.ljedrzynski.iparkapp.web.rest;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import pl.ljedrzynski.iparkapp.service.ParkingOccupationService;
 import pl.ljedrzynski.iparkapp.service.dto.ParkingOccupationDTO;
 
+import javax.validation.Valid;
 import java.net.URI;
 
 @Slf4j
@@ -25,10 +27,11 @@ public class ParkingOccupationResource {
     }
 
     @PostMapping
-    public ResponseEntity<?> registerOccupation(@RequestBody ParkingOccupationDTO parkingOccupationDTO) {
+    public ResponseEntity<?> registerOccupation(@RequestBody @Valid ParkingOccupationDTO parkingOccupationDTO) {
         log.debug("REST request : {}", parkingOccupationDTO);
-        ParkingOccupationDTO occupationDTO = parkingOccupationService.saveOccupation(parkingOccupationDTO);
-        return ResponseEntity.created(URI.create(API_PARKING_OCCUPATIONS + "/" + occupationDTO.getId()))
+        ParkingOccupationDTO occupationDTO = parkingOccupationService.createOccupation(parkingOccupationDTO);
+        return ResponseEntity.created(URI.create(String.format("%s/%d", API_PARKING_OCCUPATIONS, occupationDTO.getId())))
+                .contentType(MediaType.valueOf(MediaType.APPLICATION_JSON_UTF8_VALUE))
                 .body(occupationDTO);
     }
 }

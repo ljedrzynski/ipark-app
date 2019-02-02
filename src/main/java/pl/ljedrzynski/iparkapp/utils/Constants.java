@@ -1,4 +1,4 @@
-package pl.ljedrzynski.iparkapp.common;
+package pl.ljedrzynski.iparkapp.utils;
 
 public class Constants {
 

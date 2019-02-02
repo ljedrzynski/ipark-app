@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import pl.ljedrzynski.iparkapp.common.exception.BadRequestException;
+import pl.ljedrzynski.iparkapp.utils.exception.BadRequestException;
 import pl.ljedrzynski.iparkapp.repository.ParkingOccupationRepository;
 import pl.ljedrzynski.iparkapp.service.ParkingOccupationService;
 import pl.ljedrzynski.iparkapp.service.converter.ParkingOccupationMapper;
@@ -35,7 +35,7 @@ public class ParkingOccupationServiceImpl implements ParkingOccupationService {
     }
 
     @Transactional
-    public ParkingOccupationDTO saveOccupation(ParkingOccupationDTO parkingOccupationDTO) {
+    public ParkingOccupationDTO createOccupation(ParkingOccupationDTO parkingOccupationDTO) {
         log.debug("Request to save occupation : {}", parkingOccupationDTO);
 
         var opt = parkingOccupationRepository.findActiveParkingOccupation(parkingOccupationDTO.getRegistrationNumber());

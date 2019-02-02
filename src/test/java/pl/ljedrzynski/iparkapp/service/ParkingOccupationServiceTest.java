@@ -3,11 +3,10 @@ package pl.ljedrzynski.iparkapp.service;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import pl.ljedrzynski.iparkapp.common.exception.BadRequestException;
+import pl.ljedrzynski.iparkapp.utils.exception.BadRequestException;
 import pl.ljedrzynski.iparkapp.domain.ParkingOccupation;
 import pl.ljedrzynski.iparkapp.repository.ParkingOccupationRepository;
 import pl.ljedrzynski.iparkapp.service.converter.ParkingOccupationMapper;
@@ -19,11 +18,13 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
+import static pl.ljedrzynski.iparkapp.utils.TestUtils.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 public class ParkingOccupationServiceTest {
+
 
     @Mock
     private ParkingOccupationRepository parkingOccupationRepository;
@@ -37,31 +38,29 @@ public class ParkingOccupationServiceTest {
     }
 
     @Test
-    public void saveOccupation_shouldReturnCreatedOccupation() {
-        var parkingOccupationDTO = getParkingOccupationDTO();
-        var result = parkingOccupationService.saveOccupation(parkingOccupationDTO);
-        assertThat(result).isNotNull();
-    }
+    public void createOccupation_shouldReturnCreatedOccupation() {
+        ParkingOccupationDTO parkingOccupationDTO = getParkingOccupationDTO();
 
-    @Test
-    public void saveOccupation_shouldReturnOccupationWithValidStartDate() {
-        var parkingOccupationDTO = getParkingOccupationDTO();
-        var result = parkingOccupationService.saveOccupation(parkingOccupationDTO);
-        assertThat(result.getStartDate()).isEqualTo(LocalDateTime.of(2019, 1, 29, 12, 0, 0, 0));
+        var result = parkingOccupationService.createOccupation(parkingOccupationDTO);
+        assertThat(result).isNotNull()
+                .hasFieldOrPropertyWithValue(REGISTRATION_NUMBER, "PO50012")
+                .hasFieldOrPropertyWithValue(IS_VIP, false)
+                .hasFieldOrPropertyWithValue(START_DATE, LocalDateTime.of(2019, 1, 29, 12, 0, 0, 0));
     }
 
     @Test(expected = BadRequestException.class)
-    public void saveOccupation_shouldThrowException_whenOccupationAlreadyActive() {
+    public void createOccupation_shouldThrowException_whenOccupationAlreadyActive() {
         var parkingOccupationDTO = getParkingOccupationDTO();
         Mockito.when(parkingOccupationRepository.findActiveParkingOccupation(anyString()))
                 .thenReturn(java.util.Optional.of(new ParkingOccupation()));
-        parkingOccupationService.saveOccupation(parkingOccupationDTO);
+        parkingOccupationService.createOccupation(parkingOccupationDTO);
     }
 
     private ParkingOccupationDTO getParkingOccupationDTO() {
         return ParkingOccupationDTO.builder()
-                .registrationNumber("WH 123005")
+                .registrationNumber("PO50012")
                 .isVip(false)
                 .build();
     }
+
 }

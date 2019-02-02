@@ -4,6 +4,6 @@ import pl.ljedrzynski.iparkapp.service.dto.ParkingOccupationDTO;
 
 public interface ParkingOccupationService {
 
-    ParkingOccupationDTO saveOccupation(ParkingOccupationDTO parkingOccupationDTO);
+    ParkingOccupationDTO createOccupation(ParkingOccupationDTO parkingOccupationDTO);
 
 }

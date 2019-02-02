@@ -1,4 +1,4 @@
-package pl.ljedrzynski.iparkapp.common.exception;
+package pl.ljedrzynski.iparkapp.utils.exception;
 
 public class BadRequestException extends RuntimeException {
 
