@@ -1,6 +1,7 @@
 package pl.ljedrzynski.iparkapp.web.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,6 +18,7 @@ import pl.ljedrzynski.iparkapp.domain.ParkingOccupation;
 import pl.ljedrzynski.iparkapp.repository.ParkingOccupationRepository;
 import pl.ljedrzynski.iparkapp.service.dto.ParkingOccupationDTO;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
@@ -48,18 +50,18 @@ public class ParkingOccupationResourceIntTest {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
     }
 
+    @After
+    public void after() {
+        parkingOccupationRepository.deleteAll();
+    }
+
     @Test
     public void parkingOccupationURI_shouldCreateOccupation_whenMockMVC() throws Exception {
-        ParkingOccupationDTO parkingOccupationDTO = ParkingOccupationDTO.builder()
-                .registrationNumber(DEFAULT_REG_NUMBER)
-                .isVip(false)
-                .build();
-
         int occupationsBeforeTest = parkingOccupationRepository.findAll().size();
 
         mockMvc.perform(post(API_PARKING_OCCUPATIONS_URI)
                 .contentType(APPLICATION_JSON_CHARSET_UTF_8)
-                .content(new ObjectMapper().writeValueAsString(parkingOccupationDTO)))
+                .content(new ObjectMapper().writeValueAsString(getParkingOccupationDTO())))
                 .andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(APPLICATION_JSON_CHARSET_UTF_8))
@@ -76,8 +78,7 @@ public class ParkingOccupationResourceIntTest {
 
     @Test
     public void parkingOccupationURI_shouldReturnServerError_whenRegistrationNumberIsNull() throws Exception {
-        ParkingOccupationDTO parkingOccupationDTO = ParkingOccupationDTO.builder()
-                .build();
+        ParkingOccupationDTO parkingOccupationDTO = new ParkingOccupationDTO();
 
         mockMvc.perform(post(API_PARKING_OCCUPATIONS_URI)
                 .contentType(APPLICATION_JSON_CHARSET_UTF_8)
@@ -104,5 +105,33 @@ public class ParkingOccupationResourceIntTest {
                 .andExpect(jsonPath("$.message").value("registrationNumber: must match \"^[A-Z]{1,3}([A-Z0-9]){1,5}$\""))
                 .andReturn();
     }
+
+    @Test
+    public void parkingOccupationURI_shouldReturnClientError_whenOccupationIsAlreadyActive() throws Exception {
+        parkingOccupationRepository.save(
+                ParkingOccupation.builder()
+                        .id(1L)
+                        .registrationNumber(DEFAULT_REG_NUMBER)
+                        .startDate(LocalDateTime.now())
+                        .build()
+        );
+
+        mockMvc.perform(post(API_PARKING_OCCUPATIONS_URI)
+                .contentType(APPLICATION_JSON_CHARSET_UTF_8)
+                .content(new ObjectMapper().writeValueAsString(getParkingOccupationDTO())))
+                .andDo(print())
+                .andExpect(status().is4xxClientError())
+                .andExpect(content().contentType(APPLICATION_JSON_CHARSET_UTF_8))
+                .andExpect(jsonPath("$.message").value("Parking occupation already registered and active"))
+                .andReturn();
+    }
+
+    private ParkingOccupationDTO getParkingOccupationDTO() {
+        return ParkingOccupationDTO.builder()
+                .registrationNumber(ParkingOccupationResourceIntTest.DEFAULT_REG_NUMBER)
+                .isVip(false)
+                .build();
+    }
+
 
 }
