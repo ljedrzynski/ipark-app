@@ -11,6 +11,6 @@ import java.util.Optional;
 @Repository
 public interface ParkingOccupationRepository extends JpaRepository<ParkingOccupation, Long> {
 
-    @Query("select p from ParkingOccupation p where p.registrationNumber = :regNum and p.startDate < current_time and p.endDate is null")
+    @Query("select p from ParkingOccupation p where p.registrationNumber = :regNum and p.startDate < current_timestamp and p.endDate is null")
     Optional<ParkingOccupation> findActiveParkingOccupation(@Param("regNum") String registrationNumber);
 }

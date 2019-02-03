@@ -1,7 +1,5 @@
 package pl.ljedrzynski.iparkapp.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -12,7 +10,7 @@ import java.time.LocalDateTime;
 
 @Data
 @Entity
-@Table(name = "parking")
+@Table(name = "parking_occupation")
 public class ParkingOccupation {
 
     @Id

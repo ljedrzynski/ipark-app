@@ -28,7 +28,11 @@ public class WebConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable()
+        http.headers()
+                .frameOptions()
+                .disable()
+                .and()
+                .csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/api/parking-occupations**")
                 .permitAll()

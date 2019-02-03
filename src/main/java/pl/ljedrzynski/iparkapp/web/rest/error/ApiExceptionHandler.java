@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
@@ -17,12 +18,21 @@ import java.util.List;
 @RestControllerAdvice
 public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @Override
-    protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body, HttpHeaders headers, HttpStatus status, WebRequest request) {
+//    @Override
+//    protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body, HttpHeaders headers, HttpStatus status, WebRequest request) {
+//        return ResponseEntity.badRequest()
+//                .contentType(MediaType.valueOf(MediaType.APPLICATION_JSON_UTF8_VALUE))
+//                .body(new ApiError(HttpStatus.BAD_REQUEST, ex.getMessage()));
+//    }
+//
+
+    @ExceptionHandler(value = Exception.class)
+    public ResponseEntity<ApiError> handleException(Exception exc) {
         return ResponseEntity.badRequest()
                 .contentType(MediaType.valueOf(MediaType.APPLICATION_JSON_UTF8_VALUE))
-                .body(new ApiError(HttpStatus.BAD_REQUEST, ex.getMessage()));
+                .body(new ApiError(HttpStatus.BAD_REQUEST, exc.getMessage()));
     }
+
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
