@@ -54,4 +54,12 @@ public class ParkingOccupationServiceTest {
         parkingOccupationService.startOccupation(DEF_REG_NUMBER, false);
     }
 
+    @Test(expected = BadRequestException.class)
+    public void stopOccupation_shouldThrowException_whenActiveOccupationNotFound() {
+        when(parkingOccupationRepository.findActiveParkingOccupation(anyString()))
+                .thenReturn(java.util.Optional.empty());
+        parkingOccupationService.stopOccupation(DEF_REG_NUMBER);
+    }
+
+
 }

@@ -6,4 +6,5 @@ public interface ParkingOccupationService {
 
     ParkingOccupationDTO startOccupation(String regNumber, boolean isVip);
 
+    void stopOccupation(String regNumber);
 }

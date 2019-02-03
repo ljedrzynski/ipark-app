@@ -4,8 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import pl.ljedrzynski.iparkapp.domain.ParkingOccupation;
 import pl.ljedrzynski.iparkapp.common.exception.BadRequestException;
+import pl.ljedrzynski.iparkapp.domain.ParkingOccupation;
 import pl.ljedrzynski.iparkapp.repository.ParkingOccupationRepository;
 import pl.ljedrzynski.iparkapp.service.ParkingOccupationService;
 import pl.ljedrzynski.iparkapp.service.converter.ParkingOccupationMapper;
@@ -54,5 +54,11 @@ public class ParkingOccupationServiceImpl implements ParkingOccupationService {
         return parkingOccupationMapper.toDTO(parkingOccupation);
     }
 
-
+    @Transactional
+    public void stopOccupation(String regNumber) {
+        log.debug("Request to stop occupation for regNumber: {}", regNumber);
+        ParkingOccupation parkingOccupation = parkingOccupationRepository.findActiveParkingOccupation(regNumber)
+                .orElseThrow(() -> new BadRequestException("Parking occupation cannot be found for registrationNumber: {0}", regNumber));
+        parkingOccupation.setEndDate(LocalDateTime.now(clock));
+    }
 }

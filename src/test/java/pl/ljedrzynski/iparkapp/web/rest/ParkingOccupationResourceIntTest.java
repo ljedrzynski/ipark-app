@@ -2,11 +2,14 @@ package pl.ljedrzynski.iparkapp.web.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Example;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -21,6 +24,7 @@ import pl.ljedrzynski.iparkapp.web.rest.request.StartOccupationRequest;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -37,6 +41,7 @@ public class ParkingOccupationResourceIntTest {
 
     private static final String API_PARKING_OCCUPATIONS_URI = "/api/parking-occupations";
     private static final String API_PARKING_OCCUPATIONS_START_URI = API_PARKING_OCCUPATIONS_URI + "/start";
+    private static final String API_PARKING_OCCUPATIONS_STOP_URI = API_PARKING_OCCUPATIONS_URI + "/stop";
     private static final String DEFAULT_REG_NUMBER = "WWL50012";
 
     @Autowired
@@ -58,7 +63,7 @@ public class ParkingOccupationResourceIntTest {
     }
 
     @Test
-    public void postTo_parkingOccupationStartURI_shouldCreateOccupation_whenMockMVC() throws Exception {
+    public void parkingOccupationStartURI_shouldCreateOccupation_whenMockMVC() throws Exception {
         int occupationsBeforeTest = parkingOccupationRepository.findAll().size();
 
         mockMvc.perform(post(API_PARKING_OCCUPATIONS_START_URI)
@@ -79,7 +84,7 @@ public class ParkingOccupationResourceIntTest {
     }
 
     @Test
-    public void postTo_parkingOccupationStartURI_shouldReturnServerError_whenRegistrationNumberIsNull() throws Exception {
+    public void parkingOccupationStartURI_shouldReturnServerError_whenRegistrationNumberIsNull() throws Exception {
         ParkingOccupationDTO parkingOccupationDTO = new ParkingOccupationDTO();
 
         mockMvc.perform(post(API_PARKING_OCCUPATIONS_START_URI)
@@ -93,7 +98,7 @@ public class ParkingOccupationResourceIntTest {
     }
 
     @Test
-    public void postTo_parkingOccupationStartURI_shouldReturnServerError_whenRegistrationNumberIsInvalid() throws Exception {
+    public void parkingOccupationStartURI_shouldReturnServerError_whenRegistrationNumberIsInvalid() throws Exception {
         StartOccupationRequest startOccupationRequest = StartOccupationRequest.builder()
                 .registrationNumber("0000")
                 .build();
@@ -109,7 +114,7 @@ public class ParkingOccupationResourceIntTest {
     }
 
     @Test
-    public void postTo_parkingOccupationStartURI_shouldReturnClientError_whenOccupationIsAlreadyActive() throws Exception {
+    public void parkingOccupationStartURI_shouldReturnClientError_whenOccupationIsAlreadyActive() throws Exception {
         parkingOccupationRepository.save(
                 ParkingOccupation.builder()
                         .id(1L)
@@ -117,7 +122,6 @@ public class ParkingOccupationResourceIntTest {
                         .startDate(LocalDateTime.now())
                         .build()
         );
-
         mockMvc.perform(post(API_PARKING_OCCUPATIONS_START_URI)
                 .contentType(APPLICATION_JSON_CHARSET_UTF_8)
                 .content(new ObjectMapper().writeValueAsString(getStartOccupationRequest())))
@@ -128,12 +132,46 @@ public class ParkingOccupationResourceIntTest {
                 .andReturn();
     }
 
+    @Test
+    public void parkingOccupationStopURI_shouldStopOccupation() throws Exception {
+        LocalDateTime startTime = LocalDateTime.now();
+        parkingOccupationRepository.save(
+                ParkingOccupation.builder()
+                        .id(1L)
+                        .registrationNumber(DEFAULT_REG_NUMBER)
+                        .startDate(startTime)
+                        .build()
+        );
+        mockMvc.perform(post(API_PARKING_OCCUPATIONS_STOP_URI)
+                .contentType(MediaType.TEXT_PLAIN)
+                .content(DEFAULT_REG_NUMBER))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+
+        ParkingOccupation parkingOccupation = parkingOccupationRepository.findById(1L).get();
+        assertThat(parkingOccupation.getEndDate())
+                .isNotNull()
+                .isGreaterThan(startTime)
+                .isLessThan(LocalDateTime.now());
+    }
+
+    @Test
+    public void parkingOccupationStopURI_shouldReturnClientError_whenRegistrationNumberIsInvalid() throws Exception {
+        mockMvc.perform(post(API_PARKING_OCCUPATIONS_STOP_URI)
+                .contentType(MediaType.TEXT_PLAIN)
+                .content(DEFAULT_REG_NUMBER))
+                .andDo(print())
+                .andExpect(status().is4xxClientError())
+                .andExpect(jsonPath("$.message").value("Parking occupation cannot be found for registrationNumber: " + DEFAULT_REG_NUMBER))
+                .andReturn();
+    }
+
     private StartOccupationRequest getStartOccupationRequest() {
         return StartOccupationRequest.builder()
                 .registrationNumber(ParkingOccupationResourceIntTest.DEFAULT_REG_NUMBER)
                 .isVip(false)
                 .build();
     }
-
 
 }
