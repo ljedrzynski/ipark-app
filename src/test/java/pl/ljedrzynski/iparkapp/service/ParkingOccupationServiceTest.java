@@ -6,11 +6,10 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import pl.ljedrzynski.iparkapp.utils.exception.BadRequestException;
+import pl.ljedrzynski.iparkapp.common.exception.BadRequestException;
 import pl.ljedrzynski.iparkapp.domain.ParkingOccupation;
 import pl.ljedrzynski.iparkapp.repository.ParkingOccupationRepository;
 import pl.ljedrzynski.iparkapp.service.converter.ParkingOccupationMapper;
-import pl.ljedrzynski.iparkapp.service.dto.ParkingOccupationDTO;
 import pl.ljedrzynski.iparkapp.service.impl.ParkingOccupationServiceImpl;
 
 import java.time.Clock;
@@ -27,6 +26,7 @@ import static pl.ljedrzynski.iparkapp.utils.TestUtils.*;
 public class ParkingOccupationServiceTest {
 
 
+    private static final String DEF_REG_NUMBER = "PO50012";
     @Mock
     private ParkingOccupationRepository parkingOccupationRepository;
 
@@ -39,28 +39,19 @@ public class ParkingOccupationServiceTest {
     }
 
     @Test
-    public void createOccupation_shouldReturnCreatedOccupation() {
-        var parkingOccupationDTO = getParkingOccupationDTO();
-        var result = parkingOccupationService.createOccupation(parkingOccupationDTO);
+    public void startOccupation_shouldReturnCreatedOccupation() {
+        var result = parkingOccupationService.startOccupation(DEF_REG_NUMBER, false);
         assertThat(result).isNotNull()
-                .hasFieldOrPropertyWithValue(REGISTRATION_NUMBER, "PO50012")
+                .hasFieldOrPropertyWithValue(REGISTRATION_NUMBER, DEF_REG_NUMBER)
                 .hasFieldOrPropertyWithValue(IS_VIP, false)
                 .hasFieldOrPropertyWithValue(START_DATE, LocalDateTime.of(2019, 1, 29, 12, 0, 0, 0));
     }
 
     @Test(expected = BadRequestException.class)
-    public void createOccupation_shouldThrowException_whenOccupationAlreadyActive() {
-        var parkingOccupationDTO = getParkingOccupationDTO();
+    public void startOccupation_shouldThrowException_whenOccupationAlreadyStarted() {
         when(parkingOccupationRepository.findActiveParkingOccupation(anyString()))
                 .thenReturn(java.util.Optional.of(new ParkingOccupation()));
-        parkingOccupationService.createOccupation(parkingOccupationDTO);
-    }
-
-    private ParkingOccupationDTO getParkingOccupationDTO() {
-        return ParkingOccupationDTO.builder()
-                .registrationNumber("PO50012")
-                .isVip(false)
-                .build();
+        parkingOccupationService.startOccupation(DEF_REG_NUMBER, false);
     }
 
 }

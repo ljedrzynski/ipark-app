@@ -1,6 +1,7 @@
 package pl.ljedrzynski.iparkapp.web.rest;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -9,9 +10,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pl.ljedrzynski.iparkapp.service.ParkingOccupationService;
 import pl.ljedrzynski.iparkapp.service.dto.ParkingOccupationDTO;
+import pl.ljedrzynski.iparkapp.web.rest.request.StartOccupationRequest;
 
 import javax.validation.Valid;
-import java.net.URI;
 
 @Slf4j
 @RestController
@@ -27,10 +28,10 @@ public class ParkingOccupationResource {
     }
 
     @PostMapping
-    public ResponseEntity<?> registerOccupation(@RequestBody @Valid ParkingOccupationDTO parkingOccupationDTO) {
-        log.debug("REST request : {}", parkingOccupationDTO);
-        ParkingOccupationDTO occupationDTO = parkingOccupationService.createOccupation(parkingOccupationDTO);
-        return ResponseEntity.created(URI.create(String.format("%s/%d", API_PARKING_OCCUPATIONS_URI, occupationDTO.getId())))
+    public ResponseEntity<?> startOccupation(@RequestBody @Valid StartOccupationRequest startOccupationRequest) {
+        log.debug("REST request to start occupation : {}", startOccupationRequest);
+        ParkingOccupationDTO occupationDTO = parkingOccupationService.startOccupation(startOccupationRequest.getRegistrationNumber(), BooleanUtils.isTrue(startOccupationRequest.getIsVip()));
+        return ResponseEntity.ok()
                 .contentType(MediaType.valueOf(MediaType.APPLICATION_JSON_UTF8_VALUE))
                 .body(occupationDTO);
     }

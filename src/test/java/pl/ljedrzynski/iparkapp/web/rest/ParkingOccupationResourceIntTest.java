@@ -17,6 +17,7 @@ import pl.ljedrzynski.iparkapp.IparkAppApplication;
 import pl.ljedrzynski.iparkapp.domain.ParkingOccupation;
 import pl.ljedrzynski.iparkapp.repository.ParkingOccupationRepository;
 import pl.ljedrzynski.iparkapp.service.dto.ParkingOccupationDTO;
+import pl.ljedrzynski.iparkapp.web.rest.request.StartOccupationRequest;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -56,14 +57,14 @@ public class ParkingOccupationResourceIntTest {
     }
 
     @Test
-    public void parkingOccupationURI_shouldCreateOccupation_whenMockMVC() throws Exception {
+    public void postOn_parkingOccupationURI_shouldCreateOccupation_whenMockMVC() throws Exception {
         int occupationsBeforeTest = parkingOccupationRepository.findAll().size();
 
         mockMvc.perform(post(API_PARKING_OCCUPATIONS_URI)
                 .contentType(APPLICATION_JSON_CHARSET_UTF_8)
-                .content(new ObjectMapper().writeValueAsString(getParkingOccupationDTO())))
+                .content(new ObjectMapper().writeValueAsString(getStartOccupationRequest())))
                 .andDo(print())
-                .andExpect(status().isCreated())
+                .andExpect(status().isOk())
                 .andExpect(content().contentType(APPLICATION_JSON_CHARSET_UTF_8))
                 .andReturn();
 
@@ -77,7 +78,7 @@ public class ParkingOccupationResourceIntTest {
     }
 
     @Test
-    public void parkingOccupationURI_shouldReturnServerError_whenRegistrationNumberIsNull() throws Exception {
+    public void postOn_parkingOccupationURI_shouldReturnServerError_whenRegistrationNumberIsNull() throws Exception {
         ParkingOccupationDTO parkingOccupationDTO = new ParkingOccupationDTO();
 
         mockMvc.perform(post(API_PARKING_OCCUPATIONS_URI)
@@ -91,14 +92,14 @@ public class ParkingOccupationResourceIntTest {
     }
 
     @Test
-    public void parkingOccupationURI_shouldReturnServerError_whenRegistrationNumberIsInvalid() throws Exception {
-        ParkingOccupationDTO parkingOccupationDTO = ParkingOccupationDTO.builder()
+    public void postOn_parkingOccupationURI_shouldReturnServerError_whenRegistrationNumberIsInvalid() throws Exception {
+        StartOccupationRequest startOccupationRequest = StartOccupationRequest.builder()
                 .registrationNumber("0000")
                 .build();
 
         mockMvc.perform(post(API_PARKING_OCCUPATIONS_URI)
                 .contentType(APPLICATION_JSON_CHARSET_UTF_8)
-                .content(new ObjectMapper().writeValueAsString(parkingOccupationDTO)))
+                .content(new ObjectMapper().writeValueAsString(startOccupationRequest)))
                 .andDo(print())
                 .andExpect(status().is4xxClientError())
                 .andExpect(content().contentType(APPLICATION_JSON_CHARSET_UTF_8))
@@ -107,7 +108,7 @@ public class ParkingOccupationResourceIntTest {
     }
 
     @Test
-    public void parkingOccupationURI_shouldReturnClientError_whenOccupationIsAlreadyActive() throws Exception {
+    public void postOn_parkingOccupationURI_shouldReturnClientError_whenOccupationIsAlreadyActive() throws Exception {
         parkingOccupationRepository.save(
                 ParkingOccupation.builder()
                         .id(1L)
@@ -118,7 +119,7 @@ public class ParkingOccupationResourceIntTest {
 
         mockMvc.perform(post(API_PARKING_OCCUPATIONS_URI)
                 .contentType(APPLICATION_JSON_CHARSET_UTF_8)
-                .content(new ObjectMapper().writeValueAsString(getParkingOccupationDTO())))
+                .content(new ObjectMapper().writeValueAsString(getStartOccupationRequest())))
                 .andDo(print())
                 .andExpect(status().is4xxClientError())
                 .andExpect(content().contentType(APPLICATION_JSON_CHARSET_UTF_8))
@@ -126,8 +127,8 @@ public class ParkingOccupationResourceIntTest {
                 .andReturn();
     }
 
-    private ParkingOccupationDTO getParkingOccupationDTO() {
-        return ParkingOccupationDTO.builder()
+    private StartOccupationRequest getStartOccupationRequest() {
+        return StartOccupationRequest.builder()
                 .registrationNumber(ParkingOccupationResourceIntTest.DEFAULT_REG_NUMBER)
                 .isVip(false)
                 .build();

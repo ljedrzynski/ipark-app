@@ -4,6 +4,6 @@ import pl.ljedrzynski.iparkapp.service.dto.ParkingOccupationDTO;
 
 public interface ParkingOccupationService {
 
-    ParkingOccupationDTO createOccupation(ParkingOccupationDTO parkingOccupationDTO);
+    ParkingOccupationDTO startOccupation(String regNumber, boolean isVip);
 
 }

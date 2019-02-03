@@ -4,7 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import pl.ljedrzynski.iparkapp.utils.exception.BadRequestException;
+import pl.ljedrzynski.iparkapp.domain.ParkingOccupation;
+import pl.ljedrzynski.iparkapp.common.exception.BadRequestException;
 import pl.ljedrzynski.iparkapp.repository.ParkingOccupationRepository;
 import pl.ljedrzynski.iparkapp.service.ParkingOccupationService;
 import pl.ljedrzynski.iparkapp.service.converter.ParkingOccupationMapper;
@@ -35,16 +36,19 @@ public class ParkingOccupationServiceImpl implements ParkingOccupationService {
     }
 
     @Transactional
-    public ParkingOccupationDTO createOccupation(ParkingOccupationDTO parkingOccupationDTO) {
-        log.debug("Request to save occupation : {}", parkingOccupationDTO);
+    public ParkingOccupationDTO startOccupation(String regNumber, boolean isVip) {
+        log.debug("Request to start occupation for regNumber: {}", regNumber);
 
-        var opt = parkingOccupationRepository.findActiveParkingOccupation(parkingOccupationDTO.getRegistrationNumber());
+        var opt = parkingOccupationRepository.findActiveParkingOccupation(regNumber);
         if (opt.isPresent()) {
             throw new BadRequestException("Parking occupation already registered and active");
         }
 
-        var parkingOccupation = parkingOccupationMapper.toEntity(parkingOccupationDTO);
+        var parkingOccupation = new ParkingOccupation();
+        parkingOccupation.setRegistrationNumber(regNumber);
         parkingOccupation.setStartDate(LocalDateTime.now(clock));
+        parkingOccupation.setIsVip(isVip);
+
         parkingOccupationRepository.save(parkingOccupation);
 
         return parkingOccupationMapper.toDTO(parkingOccupation);
