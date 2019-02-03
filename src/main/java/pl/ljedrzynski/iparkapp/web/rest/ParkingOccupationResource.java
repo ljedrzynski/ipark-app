@@ -27,7 +27,7 @@ public class ParkingOccupationResource {
         this.parkingOccupationService = parkingOccupationService;
     }
 
-    @PostMapping
+    @PostMapping("/start")
     public ResponseEntity<?> startOccupation(@RequestBody @Valid StartOccupationRequest startOccupationRequest) {
         log.debug("REST request to start occupation : {}", startOccupationRequest);
         ParkingOccupationDTO occupationDTO = parkingOccupationService.startOccupation(startOccupationRequest.getRegistrationNumber(), BooleanUtils.isTrue(startOccupationRequest.getIsVip()));

@@ -36,6 +36,7 @@ import static pl.ljedrzynski.iparkapp.utils.TestUtils.*;
 public class ParkingOccupationResourceIntTest {
 
     private static final String API_PARKING_OCCUPATIONS_URI = "/api/parking-occupations";
+    private static final String API_PARKING_OCCUPATIONS_START_URI = API_PARKING_OCCUPATIONS_URI + "/start";
     private static final String DEFAULT_REG_NUMBER = "WWL50012";
 
     @Autowired
@@ -57,10 +58,10 @@ public class ParkingOccupationResourceIntTest {
     }
 
     @Test
-    public void postOn_parkingOccupationURI_shouldCreateOccupation_whenMockMVC() throws Exception {
+    public void postTo_parkingOccupationStartURI_shouldCreateOccupation_whenMockMVC() throws Exception {
         int occupationsBeforeTest = parkingOccupationRepository.findAll().size();
 
-        mockMvc.perform(post(API_PARKING_OCCUPATIONS_URI)
+        mockMvc.perform(post(API_PARKING_OCCUPATIONS_START_URI)
                 .contentType(APPLICATION_JSON_CHARSET_UTF_8)
                 .content(new ObjectMapper().writeValueAsString(getStartOccupationRequest())))
                 .andDo(print())
@@ -78,10 +79,10 @@ public class ParkingOccupationResourceIntTest {
     }
 
     @Test
-    public void postOn_parkingOccupationURI_shouldReturnServerError_whenRegistrationNumberIsNull() throws Exception {
+    public void postTo_parkingOccupationStartURI_shouldReturnServerError_whenRegistrationNumberIsNull() throws Exception {
         ParkingOccupationDTO parkingOccupationDTO = new ParkingOccupationDTO();
 
-        mockMvc.perform(post(API_PARKING_OCCUPATIONS_URI)
+        mockMvc.perform(post(API_PARKING_OCCUPATIONS_START_URI)
                 .contentType(APPLICATION_JSON_CHARSET_UTF_8)
                 .content(new ObjectMapper().writeValueAsString(parkingOccupationDTO)))
                 .andDo(print())
@@ -92,12 +93,12 @@ public class ParkingOccupationResourceIntTest {
     }
 
     @Test
-    public void postOn_parkingOccupationURI_shouldReturnServerError_whenRegistrationNumberIsInvalid() throws Exception {
+    public void postTo_parkingOccupationStartURI_shouldReturnServerError_whenRegistrationNumberIsInvalid() throws Exception {
         StartOccupationRequest startOccupationRequest = StartOccupationRequest.builder()
                 .registrationNumber("0000")
                 .build();
 
-        mockMvc.perform(post(API_PARKING_OCCUPATIONS_URI)
+        mockMvc.perform(post(API_PARKING_OCCUPATIONS_START_URI)
                 .contentType(APPLICATION_JSON_CHARSET_UTF_8)
                 .content(new ObjectMapper().writeValueAsString(startOccupationRequest)))
                 .andDo(print())
@@ -108,7 +109,7 @@ public class ParkingOccupationResourceIntTest {
     }
 
     @Test
-    public void postOn_parkingOccupationURI_shouldReturnClientError_whenOccupationIsAlreadyActive() throws Exception {
+    public void postTo_parkingOccupationStartURI_shouldReturnClientError_whenOccupationIsAlreadyActive() throws Exception {
         parkingOccupationRepository.save(
                 ParkingOccupation.builder()
                         .id(1L)
@@ -117,7 +118,7 @@ public class ParkingOccupationResourceIntTest {
                         .build()
         );
 
-        mockMvc.perform(post(API_PARKING_OCCUPATIONS_URI)
+        mockMvc.perform(post(API_PARKING_OCCUPATIONS_START_URI)
                 .contentType(APPLICATION_JSON_CHARSET_UTF_8)
                 .content(new ObjectMapper().writeValueAsString(getStartOccupationRequest())))
                 .andDo(print())
