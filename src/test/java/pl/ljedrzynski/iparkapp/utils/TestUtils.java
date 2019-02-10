@@ -5,4 +5,5 @@ public class TestUtils {
     public static final String REGISTRATION_NUMBER = "registrationNumber";
     public static final String IS_VIP = "isVip";
     public static final String START_DATE = "startDate";
+    public static final String END_DATE = "endDate";
 }

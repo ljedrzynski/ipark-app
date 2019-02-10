@@ -11,5 +11,4 @@ public class ParkingOccupationDTO {
     private Boolean isVip;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
-
 }

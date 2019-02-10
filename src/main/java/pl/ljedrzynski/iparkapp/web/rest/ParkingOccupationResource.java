@@ -4,10 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import pl.ljedrzynski.iparkapp.common.Constants;
 import pl.ljedrzynski.iparkapp.service.ParkingOccupationService;
 import pl.ljedrzynski.iparkapp.service.dto.ParkingOccupationDTO;
@@ -41,10 +38,18 @@ public class ParkingOccupationResource {
     }
 
     @PostMapping("/stop")
-    public void stopOccupation(@RequestBody @Valid @Pattern(regexp = Constants.REG_NUMBER_REGEXP) String registrationNumber) {
-        log.debug("REST request to stop occupation : {}", registrationNumber);
-        parkingOccupationService.stopOccupation(registrationNumber);
+    public void stopOccupation(@RequestBody @Valid @Pattern(regexp = Constants.REG_NUMBER_REGEXP) String regNumber) {
+        log.debug("REST request to stop occupation : {}", regNumber);
+        parkingOccupationService.stopOccupation(regNumber);
     }
 
+    @GetMapping("/{regNumber}")
+    public ResponseEntity<ParkingOccupationDTO> getParkingOccupation(@PathVariable String regNumber) {
+        log.debug("REST request to get occupation : {}", regNumber);
+        var parkingOccupation = parkingOccupationService.getParkingOccupation(regNumber);
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .body(parkingOccupation);
+    }
 
 }

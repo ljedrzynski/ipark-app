@@ -1,4 +1,4 @@
-package pl.ljedrzynski.iparkapp.service.converter;
+package pl.ljedrzynski.iparkapp.service.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
