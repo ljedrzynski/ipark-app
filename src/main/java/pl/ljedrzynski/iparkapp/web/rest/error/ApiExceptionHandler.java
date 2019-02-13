@@ -18,21 +18,12 @@ import java.util.List;
 @RestControllerAdvice
 public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
-//    @Override
-//    protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body, HttpHeaders headers, HttpStatus status, WebRequest request) {
-//        return ResponseEntity.badRequest()
-//                .contentType(MediaType.valueOf(MediaType.APPLICATION_JSON_UTF8_VALUE))
-//                .body(new ApiError(HttpStatus.BAD_REQUEST, ex.getMessage()));
-//    }
-//
-
     @ExceptionHandler(value = Exception.class)
     public ResponseEntity<ApiError> handleException(Exception exc) {
         return ResponseEntity.badRequest()
-                .contentType(MediaType.valueOf(MediaType.APPLICATION_JSON_UTF8_VALUE))
+                .contentType(MediaType.APPLICATION_JSON)
                 .body(new ApiError(HttpStatus.BAD_REQUEST, exc.getMessage()));
     }
-
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
@@ -44,7 +35,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
             errors.add(error.getObjectName() + ": " + error.getDefaultMessage());
         }
         return ResponseEntity.badRequest()
-                .contentType(MediaType.valueOf(MediaType.APPLICATION_JSON_UTF8_VALUE))
+                .contentType(MediaType.APPLICATION_JSON)
                 .body(new ApiError(HttpStatus.BAD_REQUEST, String.join(";", errors)));
     }
 }

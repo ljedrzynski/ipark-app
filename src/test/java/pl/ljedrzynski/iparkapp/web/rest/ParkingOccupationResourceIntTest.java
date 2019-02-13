@@ -17,7 +17,6 @@ import org.springframework.web.context.WebApplicationContext;
 import pl.ljedrzynski.iparkapp.IparkAppApplication;
 import pl.ljedrzynski.iparkapp.domain.ParkingOccupation;
 import pl.ljedrzynski.iparkapp.repository.ParkingOccupationRepository;
-import pl.ljedrzynski.iparkapp.service.dto.ParkingOccupationDTO;
 import pl.ljedrzynski.iparkapp.web.rest.request.StartOccupationRequest;
 
 import java.time.LocalDateTime;
@@ -57,7 +56,7 @@ public class ParkingOccupationResourceIntTest {
     }
 
     @Test
-    public void post_parkingOccupationStartURI_shouldCreateOccupation_whenMockMVC() throws Exception {
+    public void post_parkingOccupationStartURI_shouldStartOccupation_whenMockMVC() throws Exception {
         var sizeBeforeTest = parkingOccupationRepository.findAll().size();
         var startOccupationRequest = StartOccupationRequest.builder()
                 .registrationNumber(ParkingOccupationResourceIntTest.DEFAULT_REG_NUMBER)
@@ -65,11 +64,11 @@ public class ParkingOccupationResourceIntTest {
                 .build();
 
         mockMvc.perform(post(API_PARKING_OCCUPATIONS_START_URI)
-                .contentType(APPLICATION_JSON_CHARSET_UTF_8)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(new ObjectMapper().writeValueAsString(startOccupationRequest)))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(APPLICATION_JSON_CHARSET_UTF_8))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andReturn();
 
         var occupations = parkingOccupationRepository.findAll();
@@ -83,31 +82,31 @@ public class ParkingOccupationResourceIntTest {
     }
 
     @Test
-    public void post_parkingOccupationStartURI_shouldReturnServerError_whenRegistrationNumberIsNull() throws Exception {
-        var parkingOccupationDTO = new ParkingOccupationDTO();
+    public void post_parkingOccupationStartURI_shouldReturnClientError_whenRegistrationNumberIsNull() throws Exception {
+        var startOccupationRequest = new StartOccupationRequest();
 
         mockMvc.perform(post(API_PARKING_OCCUPATIONS_START_URI)
-                .contentType(APPLICATION_JSON_CHARSET_UTF_8)
-                .content(new ObjectMapper().writeValueAsString(parkingOccupationDTO)))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(new ObjectMapper().writeValueAsString(startOccupationRequest)))
                 .andDo(print())
                 .andExpect(status().is4xxClientError())
-                .andExpect(content().contentType(APPLICATION_JSON_CHARSET_UTF_8))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(jsonPath("$.message").value("registrationNumber: must not be null"))
                 .andReturn();
     }
 
     @Test
-    public void post_parkingOccupationStartURI_shouldReturnServerError_whenRegistrationNumberIsInvalid() throws Exception {
+    public void post_parkingOccupationStartURI_shouldReturnClientError_whenRegistrationNumberIsInvalid() throws Exception {
         var startOccupationRequest = StartOccupationRequest.builder()
                 .registrationNumber("0000")
                 .build();
 
         mockMvc.perform(post(API_PARKING_OCCUPATIONS_START_URI)
-                .contentType(APPLICATION_JSON_CHARSET_UTF_8)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(new ObjectMapper().writeValueAsString(startOccupationRequest)))
                 .andDo(print())
                 .andExpect(status().is4xxClientError())
-                .andExpect(content().contentType(APPLICATION_JSON_CHARSET_UTF_8))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(jsonPath("$.message").value("registrationNumber: must match \"^[A-Z]{1,3}([A-Z0-9]){1,5}$\""))
                 .andReturn();
     }
@@ -127,11 +126,11 @@ public class ParkingOccupationResourceIntTest {
                 .build();
 
         mockMvc.perform(post(API_PARKING_OCCUPATIONS_START_URI)
-                .contentType(APPLICATION_JSON_CHARSET_UTF_8)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(new ObjectMapper().writeValueAsString(startOccupationRequest)))
                 .andDo(print())
                 .andExpect(status().is4xxClientError())
-                .andExpect(content().contentType(APPLICATION_JSON_CHARSET_UTF_8))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(jsonPath("$.message").value("Parking occupation already registered and active"))
                 .andReturn();
     }
@@ -171,7 +170,7 @@ public class ParkingOccupationResourceIntTest {
                 .content(DEFAULT_REG_NUMBER))
                 .andDo(print())
                 .andExpect(status().is4xxClientError())
-                .andExpect(content().contentType(APPLICATION_JSON_CHARSET_UTF_8))
+                .andExpect(content().contentType(APPLICATION_JSON))
                 .andExpect(jsonPath("$.message").value("Cannot found any active occupation for registrationNumber: " + DEFAULT_REG_NUMBER))
                 .andReturn();
     }
@@ -186,10 +185,10 @@ public class ParkingOccupationResourceIntTest {
         parkingOccupationRepository.save(parkingOccupation);
 
         mockMvc.perform(get(API_PARKING_OCCUPATIONS_URI + "/" + DEFAULT_REG_NUMBER)
-                .contentType(APPLICATION_JSON_CHARSET_UTF_8))
+                .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(APPLICATION_JSON_CHARSET_UTF_8))
+                .andExpect(content().contentType(APPLICATION_JSON))
                 .andExpect(jsonPath("$.registrationNumber").value(parkingOccupation.getRegistrationNumber()))
                 .andExpect(jsonPath("$.startDate").value(FORMATTER.format(parkingOccupation.getStartDate())))
                 .andExpect(jsonPath("$.endDate").doesNotExist())

@@ -50,7 +50,6 @@ public class ParkingOccupationServiceImpl implements ParkingOccupationService {
                     throw new BadRequestException("Parking occupation already registered and active");
                 });
 
-
         var parkingOccupation = new ParkingOccupation();
         parkingOccupation.setRegistrationNumber(regNumber);
         parkingOccupation.setStartDate(LocalDateTime.now(clock));
@@ -77,7 +76,7 @@ public class ParkingOccupationServiceImpl implements ParkingOccupationService {
 
     public ParkingOccupationDTO getParkingOccupation(String regNumber) {
         log.debug("Request to get parking occupation for regNumber: {}", regNumber);
-        ParkingOccupation parkingOccupation = getParkingOccupationOrElseThrowException(regNumber);
+        var parkingOccupation = getParkingOccupationOrElseThrowException(regNumber);
         return parkingOccupationMapper.toDTO(parkingOccupation);
     }
 

@@ -29,9 +29,9 @@ public class ParkingOccupationResource {
     @PostMapping("/start")
     public ResponseEntity<ParkingOccupationDTO> startOccupation(@RequestBody @Valid StartOccupationRequest startOccupationRequest) {
         log.debug("REST request to start occupation : {}", startOccupationRequest);
-        ParkingOccupationDTO occupationDTO = parkingOccupationService.startOccupation(startOccupationRequest.getRegistrationNumber(), BooleanUtils.isTrue(startOccupationRequest.getIsVip()));
+        var occupationDTO = parkingOccupationService.startOccupation(startOccupationRequest.getRegistrationNumber(), BooleanUtils.isTrue(startOccupationRequest.getIsVip()));
         return ResponseEntity.ok()
-                .contentType(MediaType.valueOf(MediaType.APPLICATION_JSON_UTF8_VALUE))
+                .contentType(MediaType.APPLICATION_JSON)
                 .body(occupationDTO);
 
 
@@ -48,7 +48,7 @@ public class ParkingOccupationResource {
         log.debug("REST request to get occupation : {}", regNumber);
         var parkingOccupation = parkingOccupationService.getParkingOccupation(regNumber);
         return ResponseEntity.ok()
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .contentType(MediaType.APPLICATION_JSON)
                 .body(parkingOccupation);
     }
 
