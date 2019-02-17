@@ -17,4 +17,3 @@ One way is to execute the main method in the pl.ljedrzynski.iparkapp.IparkAppApp
 Alternatively you can use the Spring Boot Maven plugin like so:
 
 mvn spring-boot:run
-```
