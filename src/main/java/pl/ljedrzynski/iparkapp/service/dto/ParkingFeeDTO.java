@@ -13,4 +13,5 @@ public class ParkingFeeDTO {
 
     private double feeAmount;
     private String feeCurrency;
+
 }

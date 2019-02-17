@@ -2,8 +2,10 @@ package pl.ljedrzynski.iparkapp.web.rest;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import pl.ljedrzynski.iparkapp.common.Constants;
 import pl.ljedrzynski.iparkapp.service.ParkingOccupationService;
@@ -22,6 +24,7 @@ public class ParkingOccupationResource {
 
     private ParkingOccupationService parkingOccupationService;
 
+    @Autowired
     public ParkingOccupationResource(ParkingOccupationService parkingOccupationService) {
         this.parkingOccupationService = parkingOccupationService;
     }
@@ -33,23 +36,25 @@ public class ParkingOccupationResource {
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(occupationDTO);
-
-
     }
 
     @PostMapping("/stop")
-    public void stopOccupation(@RequestBody @Valid @Pattern(regexp = Constants.REG_NUMBER_REGEXP) String regNumber) {
+    public ResponseEntity<ParkingOccupationDTO> stopOccupation(@RequestBody @Valid @Pattern(regexp = Constants.REG_NUMBER_REGEXP) String regNumber) {
         log.debug("REST request to stop occupation : {}", regNumber);
-        parkingOccupationService.stopOccupation(regNumber);
+        var parkingOccupationDTO = parkingOccupationService.stopOccupation(regNumber);
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(parkingOccupationDTO);
     }
 
+    @PreAuthorize("hasRole('OPERATOR')")
     @GetMapping("/{regNumber}")
     public ResponseEntity<ParkingOccupationDTO> getParkingOccupation(@PathVariable String regNumber) {
         log.debug("REST request to get occupation : {}", regNumber);
-        var parkingOccupation = parkingOccupationService.getParkingOccupation(regNumber);
+        var parkingOccupationDTO = parkingOccupationService.getParkingOccupation(regNumber);
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(parkingOccupation);
+                .body(parkingOccupationDTO);
     }
 
 }

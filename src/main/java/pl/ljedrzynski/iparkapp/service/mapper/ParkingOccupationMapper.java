@@ -12,5 +12,4 @@ public interface ParkingOccupationMapper {
 
     ParkingOccupationDTO toDTO(ParkingOccupation parkingOccupation);
 
-    ParkingOccupation toEntity(ParkingOccupationDTO parkingOccupationDTO);
 }

@@ -15,4 +15,5 @@ public interface ParkingOccupationRepository extends JpaRepository<ParkingOccupa
     @Transactional
     @Query("select p from ParkingOccupation p where p.registrationNumber = :regNum and p.startDate < current_timestamp and p.endDate is null")
     Optional<ParkingOccupation> findActiveParkingOccupation(@Param("regNum") String registrationNumber);
+
 }

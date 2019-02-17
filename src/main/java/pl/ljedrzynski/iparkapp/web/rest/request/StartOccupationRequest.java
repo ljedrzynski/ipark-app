@@ -14,9 +14,12 @@ import javax.validation.constraints.Pattern;
 @NoArgsConstructor
 @AllArgsConstructor
 public class StartOccupationRequest {
+
     @NotNull
     @Pattern(regexp = Constants.REG_NUMBER_REGEXP)
     private String registrationNumber;
+
     private Boolean isVip;
+
 }
 

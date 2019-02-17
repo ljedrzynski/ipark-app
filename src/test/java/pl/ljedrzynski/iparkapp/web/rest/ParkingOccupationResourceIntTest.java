@@ -41,6 +41,8 @@ public class ParkingOccupationResourceIntTest {
     private static final String API_PARKING_OCCUPATIONS_START_URI = API_PARKING_OCCUPATIONS_URI + "/start";
     private static final String API_PARKING_OCCUPATIONS_STOP_URI = API_PARKING_OCCUPATIONS_URI + "/stop";
     private static final String DEFAULT_REG_NUMBER = "WWL50012";
+    public static final String DEF_CURRENCY_CODE = "PLN";
+    public static final int DEF_FEE_AMOUNT = 1;
 
     @Autowired
     private WebApplicationContext wac;
@@ -59,7 +61,7 @@ public class ParkingOccupationResourceIntTest {
     public void post_parkingOccupationStartURI_shouldStartOccupation_whenMockMVC() throws Exception {
         var sizeBeforeTest = parkingOccupationRepository.findAll().size();
         var startOccupationRequest = StartOccupationRequest.builder()
-                .registrationNumber(ParkingOccupationResourceIntTest.DEFAULT_REG_NUMBER)
+                .registrationNumber(DEFAULT_REG_NUMBER)
                 .isVip(false)
                 .build();
 
@@ -75,10 +77,9 @@ public class ParkingOccupationResourceIntTest {
         assertThat(occupations).hasSize(sizeBeforeTest + 1);
 
         var parkingOccupation = occupations.get(occupations.size() - 1);
-        assertThat(parkingOccupation)
-                .hasFieldOrPropertyWithValue(REGISTRATION_NUMBER, startOccupationRequest.getRegistrationNumber())
-                .hasFieldOrPropertyWithValue(IS_VIP, startOccupationRequest.getIsVip())
-                .hasFieldOrProperty(START_DATE);
+        assertThat(parkingOccupation.getRegistrationNumber()).isEqualTo(DEFAULT_REG_NUMBER);
+        assertThat(parkingOccupation.getIsVip()).isEqualTo(false);
+        assertThat(parkingOccupation.getStartDate()).isNotNull();
     }
 
     @Test
@@ -137,9 +138,11 @@ public class ParkingOccupationResourceIntTest {
 
     @Test
     public void post_parkingOccupationStopURI_shouldStopOccupation_whenMockMVC() throws Exception {
+        var startDate = LocalDateTime.now();
         var mockParkingOccupation = ParkingOccupation.builder()
                 .registrationNumber(DEFAULT_REG_NUMBER)
-                .startDate(LocalDateTime.now())
+                .startDate(startDate)
+                .isVip(false)
                 .build();
 
         parkingOccupationRepository.save(mockParkingOccupation);
@@ -151,16 +154,26 @@ public class ParkingOccupationResourceIntTest {
                 .content(DEFAULT_REG_NUMBER))
                 .andDo(print())
                 .andExpect(status().isOk())
+                .andExpect(content().contentType(APPLICATION_JSON))
+                .andExpect(jsonPath("$.registrationNumber").value(DEFAULT_REG_NUMBER))
+                .andExpect(jsonPath("$.startDate").value(FORMATTER.format(startDate)))
+                .andExpect(jsonPath("$.endDate").exists())
+                .andExpect(jsonPath("$.parkingFee.feeAmount").value(DEF_FEE_AMOUNT))
+                .andExpect(jsonPath("$.parkingFee.feeCurrency").value(DEF_CURRENCY_CODE))
                 .andReturn();
 
         var parkingOccupations = parkingOccupationRepository.findAll();
         assertThat(parkingOccupations).hasSize(sizeBeforeTest);
 
         var parkingOccupation = parkingOccupations.get(parkingOccupations.size() - 1);
+
+        assertThat(parkingOccupation).isNotNull();
         assertThat(parkingOccupation.getEndDate())
                 .isNotNull()
                 .isGreaterThan(mockParkingOccupation.getStartDate())
                 .isLessThan(LocalDateTime.now());
+        assertThat(parkingOccupation.getFeeAmount()).isEqualTo(DEF_FEE_AMOUNT);
+        assertThat(parkingOccupation.getFeeCurrencyCode()).isEqualTo(DEF_CURRENCY_CODE);
     }
 
     @Test
@@ -177,9 +190,10 @@ public class ParkingOccupationResourceIntTest {
 
     @Test
     public void get_parkingOccupationURI_shouldReturnParkingOccupation() throws Exception {
+        var startDate = LocalDateTime.now();
         var parkingOccupation = ParkingOccupation.builder()
                 .registrationNumber(DEFAULT_REG_NUMBER)
-                .startDate(LocalDateTime.now().minusMinutes(30))
+                .startDate(startDate)
                 .build();
 
         parkingOccupationRepository.save(parkingOccupation);
@@ -189,8 +203,8 @@ public class ParkingOccupationResourceIntTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(APPLICATION_JSON))
-                .andExpect(jsonPath("$.registrationNumber").value(parkingOccupation.getRegistrationNumber()))
-                .andExpect(jsonPath("$.startDate").value(FORMATTER.format(parkingOccupation.getStartDate())))
+                .andExpect(jsonPath("$.registrationNumber").value(DEFAULT_REG_NUMBER))
+                .andExpect(jsonPath("$.startDate").value(FORMATTER.format(startDate)))
                 .andExpect(jsonPath("$.endDate").doesNotExist())
                 .andReturn();
     }

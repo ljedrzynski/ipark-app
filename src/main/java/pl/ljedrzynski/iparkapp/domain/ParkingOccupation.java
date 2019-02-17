@@ -24,14 +24,25 @@ public class ParkingOccupation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @NotNull
     @Pattern(regexp = Constants.REG_NUMBER_REGEXP)
     private String registrationNumber;
+
     @Column
     private Boolean isVip;
+
     @NotNull
     @Column
     private LocalDateTime startDate;
+
     @Column
     private LocalDateTime endDate;
+
+    @Column
+    private Double feeAmount;
+
+    @Column
+    private String feeCurrencyCode;
+
 }

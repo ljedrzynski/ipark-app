@@ -1,2 +1,2 @@
-INSERT INTO PARKING_FEE_RATE values('PLN', 1, 2, 2, 0);
-INSERT INTO PARKING_FEE_RATE values('PLN', 1, 2, 2, 1);
+INSERT INTO parking_fee_rate(id, currency_code,first_hour_fee,second_hour_fee,next_hour_factor,vip) VALUES (1, 'PLN', 1, 2, 2, FALSE);
+INSERT INTO parking_fee_rate(id, currency_code,first_hour_fee,second_hour_fee,next_hour_factor,vip) VALUES (2, 'PLN', 0, 2, 1.5, TRUE);
