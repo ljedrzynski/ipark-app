@@ -1,10 +1,16 @@
 package pl.ljedrzynski.iparkapp.service.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-
-import javax.money.MonetaryAmount;
+import lombok.NoArgsConstructor;
 
 @Data
-public class ParkingFeeDTO extends ParkingOccupationDTO {
-    private MonetaryAmount fee;
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class ParkingFeeDTO {
+
+    private double feeAmount;
+    private String feeCurrency;
 }

@@ -28,15 +28,15 @@ public class ParkingOccupationServiceTest {
 
 
     private static final String DEF_REG_NUMBER = "PO50012";
+
     @Mock
     private ParkingOccupationRepository parkingOccupationRepository;
-
     private ParkingOccupationService parkingOccupationService;
 
     @Before
     public void setUp() {
         Clock clock = Clock.fixed(Instant.parse("2019-01-29T12:00:00.00Z"), ZoneId.of("GMT"));
-        parkingOccupationService = new ParkingOccupationServiceImpl(parkingOccupationRepository, ParkingOccupationMapper.INSTANCE, ParkingFeeMapper.INSTANCE, clock);
+        parkingOccupationService = new ParkingOccupationServiceImpl(parkingOccupationRepository, ParkingOccupationMapper.INSTANCE, clock);
     }
 
     @Test
@@ -59,6 +59,13 @@ public class ParkingOccupationServiceTest {
     public void stopOccupation_shouldThrowException_whenActiveOccupationNotFound() {
         when(parkingOccupationRepository.findActiveParkingOccupation(anyString()))
                 .thenReturn(Optional.empty());
+        parkingOccupationService.stopOccupation(DEF_REG_NUMBER);
+    }
+
+    @Test
+    public void stopOccupation_shouldReturnParkingFee() {
+        when(parkingOccupationRepository.findActiveParkingOccupation(anyString()))
+                .thenReturn(Optional.of(new ParkingOccupation()));
         parkingOccupationService.stopOccupation(DEF_REG_NUMBER);
     }
 
@@ -87,5 +94,10 @@ public class ParkingOccupationServiceTest {
         when(parkingOccupationRepository.findActiveParkingOccupation(anyString()))
                 .thenReturn(Optional.empty());
         parkingOccupationService.getParkingOccupation(DEF_REG_NUMBER);
+    }
+
+    @Test(expected = BadRequestException.class)
+    public void getParkingFee_shouldThrowException_whenParkingOccupationIsNull() {
+//        parkingOccupationService.getParkingFee()
     }
 }
